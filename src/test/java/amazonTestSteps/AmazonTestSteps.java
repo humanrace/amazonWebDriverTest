@@ -15,7 +15,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
  * Created by pfokin on 12.05.2017.
  */
 
-public class AmazonTestStep {
+public class AmazonTestSteps {
 
     private static boolean IF_CHROME_BROWSER_USED = true;
     public static WebDriver driver;
