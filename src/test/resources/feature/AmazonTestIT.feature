@@ -2,13 +2,11 @@ Feature: Simple Amazon page test
 
   Background:
 
-
+    And Im opening 'https://www.amazon.co.uk'
 
   Scenario: Simple Amazon page test
 
-    And Im opening 'https://www.amazon.co.uk'
-
-    #And Verify that the page is correct and opened
+    And Verify that the page is correct and opened
 
     #And  Search for Harry Potter and the Cursed Child in section books
 

@@ -15,7 +15,7 @@ import org.testng.annotations.BeforeClass;
         glue = {"feature"},
         plugin = {"pretty"})
 
-public class amazonTestIT implements En {
+public class AmazonTestI implements En {
 
     private static boolean IF_CHROME_BROWSER_USED = true;
 
