@@ -10,6 +10,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import java.util.concurrent.TimeUnit;
+
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.FileAssert.fail;
@@ -27,17 +29,16 @@ public class AmazonTestSteps {
     @Before
     public static void goToAmazon() {
 
-        boolean IF_CHROME_BROWSER_USED = true;
-        if (IF_CHROME_BROWSER_USED) {
-            System.setProperty("webdriver.chrome.driver", "D:\\Work\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "C:\\chromedriver.exe");
+
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
         }
-    }
+
 
     @Given("Im opening '([^\"]*)'")
     public void openSite(String siteDomainName) throws Exception {
 
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
         driver.get(siteDomainName);
 
         for (int second = 0; ; second++) {
@@ -66,6 +67,7 @@ public class AmazonTestSteps {
         driver.findElement(By.id("twotabsearchtextbox")).clear();
         driver.findElement(By.id("twotabsearchtextbox")).sendKeys(searchString);
         driver.findElement(By.id("issDiv1")).click();
+        driver.manage().timeouts().pageLoadTimeout(10,TimeUnit.SECONDS);
 
         assertTrue(driver.getTitle().equalsIgnoreCase(TITLE));
     }
@@ -73,10 +75,11 @@ public class AmazonTestSteps {
     @And("Verify that the first items has the title: '([^\"]*)'")
     public void checkFirstItemOnThePage(String firstItemTitle) {
 
-        assertTrue(driver.findElement(By.xpath("//li[@id='result_0']/div/div/div/div[2]/div[2]/div/a/h2")).getText()
-                        .contains(firstItemTitle),
+        assertTrue(driver.findElement(By.id("result_0")).findElement(By.cssSelector(
+                "a.a-link-normal.s-access-detail-page.s-color-twister-title-link.a-text-normal")).getText().contains(firstItemTitle),
                 "First element of the page is not same as expected one..Actual: was: " +
-                        driver.findElement(By.xpath("//li[@id='result_0']/div/div/div/div[2]/div[2]/div/a/h2")).getText());
+                        driver.findElement(By.id("result_0")).findElement(By.cssSelector(
+                                "a.a-link-normal.s-access-detail-page.s-color-twister-title-link.a-text-normal")).getText());
     }
 
     @And("It has a badge '([^\"]*)'")
@@ -107,6 +110,7 @@ public class AmazonTestSteps {
 
         driver.findElement(By.id("result_0")).findElement(By.cssSelector(
                 "a.a-link-normal.s-access-detail-page.s-color-twister-title-link.a-text-normal")).click();
+        driver.manage().timeouts().pageLoadTimeout(10,TimeUnit.SECONDS);
 
         //Checking title
         assertTrue(driver.findElement(By.id("productTitle")).getText().contains(title), "Product title doesnt contain " +
@@ -129,10 +133,13 @@ public class AmazonTestSteps {
     public void submitToCard() {
 
         driver.findElement(By.id("submit.add-to-cart")).click();
+
     }
 
     @And("Verify that the notification is shown with the title '([^\"]*)'")
     public void checkNotification(String addedToBasket) {
+
+        driver.manage().timeouts().pageLoadTimeout(10,TimeUnit.SECONDS);
 
         Assert.assertTrue(driver.findElement(By.id("huc-v2-order-row-inner")).isDisplayed());
 
@@ -157,6 +164,7 @@ public class AmazonTestSteps {
     @And("Verify that the book is shown on the list")
     public void checkBookShown() {
 
+        driver.manage().timeouts().pageLoadTimeout(10,TimeUnit.SECONDS);
         Assert.assertTrue("Book is not displaed in the basket list..",driver.findElement(By.cssSelector(
                 "span.a-size-medium.sc-product-title.a-text-bold")).isDisplayed());
     }
@@ -186,7 +194,6 @@ public class AmazonTestSteps {
         //check total price
         Assert.assertEquals("Quantity of expeced items in the basket is not same as expected one",totalPrice,
                 driver.findElement(By.id("sc-subtotal-amount-activecart")).getText());
-
     }
 
     @After
@@ -195,8 +202,3 @@ public class AmazonTestSteps {
         driver.quit();
     }
 }
-
-
-
-
-
