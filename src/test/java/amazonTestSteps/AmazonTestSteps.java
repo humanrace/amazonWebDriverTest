@@ -10,6 +10,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.testng.Assert.assertEquals;
@@ -27,7 +28,7 @@ public class AmazonTestSteps {
     private static final String TITLE = "Amazon.co.uk: Harry Potter and the Cursed Child: Books";
 
     @Before
-    public static void goToAmazon() {
+    public void goToAmazon() {
 
         System.setProperty("webdriver.chrome.driver", "C:\\chromedriver.exe");
 
@@ -194,6 +195,23 @@ public class AmazonTestSteps {
         //check total price
         Assert.assertEquals("Quantity of expeced items in the basket is not same as expected one",totalPrice,
                 driver.findElement(By.id("sc-subtotal-amount-activecart")).getText());
+
+
+
+
+
+    }
+
+    void xMethod() {
+        Map<String, String> testMap = new LinkedHashMap<String, String>();
+        testMap.put("Tonka", "Liubov");
+        testMap.put("Ackii", "Pavel");
+
+        List<String> xList = new ArrayList<String>();
+        xList.add("Usan");
+        String y = xList.get(0);
+
+        List<Map<String, String>> megaMap = new ArrayList<Map<String, String>>();
     }
 
     @After
@@ -201,4 +219,8 @@ public class AmazonTestSteps {
         driver.close();
         driver.quit();
     }
+
+
+
+
 }
