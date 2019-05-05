@@ -53,17 +53,4 @@ public final class JSONUtils {
         }
         return true;
     }
-
-
-//    /**
-//     * Extracts JSON param value
-//     *
-//     * @param json      source JSON
-//     * @param paramPath path to param which value should be extracted
-//     * @return JSON param value
-//     */
-//    public static <T> T extractFromJson(String json, String paramPath) {
-//        Configuration conf = Configuration.defaultConfiguration().setOptions(Option.DEFAULT_PATH_LEAF_TO_NULL);
-//        return JsonPath.using(conf).parse(json).read(paramPath);
-//    }
 }

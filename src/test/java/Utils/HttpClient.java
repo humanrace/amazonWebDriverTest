@@ -1,6 +1,5 @@
 package Utils;
 
-import org.apache.http.Header;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -12,37 +11,40 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import static Utils.MultiPartBuilder.setMultiPartParameters;
 
 public class HttpClient {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(HttpClient.class);
 
     private static final ThreadLocal<CloseableHttpClient> threadLocalClient =
             ThreadLocal.withInitial(() -> HttpClientBuilder.create().build());
 
-    public HttpClient() {
-    }
-
     public HttpResponseDecorator sendRequest(
-            RequestType type, String resource, String body) {
+            RequestType type, String url, String resource, String body) {
         RequestBuilder requestBuilder = new RequestBuilder();
         switch (type) {
             case POST:
                 requestBuilder
-                        .createPostRequest(Requests.BASE_URL + resource)
-                        .appendJsonBody(body);
-                requestBuilder.setHeader(new HttpHeader("Content-Type", "application/json"));
-                requestBuilder.setHeader(new HttpHeader("Cookie", "ru_RU"));
-                break;
-            case GET:
-                requestBuilder.createGetRequest(Requests.BASE_URL + resource);
-                break;
-            case PUT:
-                requestBuilder
-                        .createPutRequest(Requests.BASE_URL + resource)
-                        .appendTextBody(body);
+                        .createPostRequest(url + resource)
+                        .appendJsonBody(body)
+                        .setHeader(new HttpHeader("Cookie", HeaderData.COOKIE))
+                        .setHeader(new HttpHeader("Content", HeaderData.JSON));
                 break;
         }
+        return sender(requestBuilder);
+    }
+
+    public HttpResponseDecorator sendMultipartRequest(
+            String url, String resource, List<Map<String, String>> dataList) {
+        RequestBuilder requestBuilder = new RequestBuilder();
+        requestBuilder
+                .createPostRequest(url + resource)
+                .addMultyPartFormData(setMultiPartParameters(dataList))
+                .setHeader(new HttpHeader("Cookie", HeaderData.COOKIE));
         return sender(requestBuilder);
     }
 
@@ -54,8 +56,8 @@ public class HttpClient {
     }
 
     private HttpResponseDecorator sendRequest(HttpUriRequest request) {
-        logger.info("Sending request: \n{}", request);
-        logger.debug("Headers: {}", Arrays.toString(request.getAllHeaders()));
+        logger.info("Sending request to Uri: \n{}", request.getURI());
+        logger.info("Headers: {}", Arrays.toString(request.getAllHeaders()));
         if (request instanceof HttpEntityEnclosingRequestBase) {
             HttpEntityEnclosingRequestBase entityEnclosingRequest = (HttpEntityEnclosingRequestBase) request;
             if (null != entityEnclosingRequest.getEntity()) {
@@ -63,9 +65,7 @@ public class HttpClient {
                 try {
                     entityEnclosingRequest.getEntity().writeTo(outstream);
                     String body = outstream.toString(StandardCharsets.UTF_8.name());
-                    if (Arrays.stream(request.getAllHeaders()).noneMatch(this::headerContainsMediaInfo)) {
-                        logger.debug("Body: \n{}", JSONUtils.beautifyIfJSON(body));
-                    }
+                    logger.info("Body: \n{}", JSONUtils.beautifyIfJSON(body));
                 } catch (IOException e) {
                     throw new RuntimeException("Failed to create request body", e);
                 }
@@ -78,9 +78,5 @@ public class HttpClient {
         } catch (IOException e) {
             throw new RuntimeException("Failed to send request", e);
         }
-    }
-
-    private boolean headerContainsMediaInfo(Header h) {
-        return h.getValue() != null && (h.getValue().equals("image/jpeg") || h.getValue().equals("video/mp4"));
     }
 }

@@ -6,7 +6,6 @@ import org.apache.http.StatusLine;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-
 public class HttpResponseDecorator {
 
     private HttpResponse responseBase;
@@ -14,10 +13,6 @@ public class HttpResponseDecorator {
 
     public HttpResponseDecorator(HttpResponse responseBase) {
         this.responseBase = responseBase;
-    }
-
-    public boolean isSuccess() {
-        return getStatusCode() >= 200 && getStatusCode() <= 299;
     }
 
     public int getStatusCode() {
