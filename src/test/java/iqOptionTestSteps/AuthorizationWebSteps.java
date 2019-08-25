@@ -2,27 +2,88 @@ package iqOptionTestSteps;
 
 import cucumber.api.java.After;
 import cucumber.api.java.en.And;
-import cucumber.api.java.en.Given;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.LoggerFactory;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.FileAssert.fail;
+import static pages.IqOptionMainPage.*;
 
 
 public class AuthorizationWebSteps {
 
     private static WebDriver driver;
 
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
+
     private static final String MAIN_PAGE_TITTLE = "Forex, Stocks, ETFs & Options Trading | IQ Option";
     private static final String WEB_DRIVER_PROPERTY_KEY = "webdriver.chrome.driver";
     private static final String WEB_DRIVER_PROPERTY_VALUE = "C:\\chromedriver.exe";
 
-    @Given("Im opening '([^\"]*)'")
+    private void openPage(String siteDomainName) {
+        System.setProperty(WEB_DRIVER_PROPERTY_KEY, WEB_DRIVER_PROPERTY_VALUE);
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        driver.get(siteDomainName);
+    }
+
+    @And("enter login '([^\"]*)' and password '([^\"]*)'")
+    public void enterLoginAndPassword(String login, String password) throws InterruptedException {
+        driver.findElement(SideBarLocators.sidebarTabLocator).click();
+        waitForElementByName(EMAIL_ELEMENT);
+        driver.findElement(SideBarLoginLocators.emailByNameLocator).sendKeys(KEYS_CHECK);
+        driver.findElement(SideBarLoginLocators.emailByNameLocator).clear();
+        driver.findElement(SideBarLoginLocators.emailByNameLocator).sendKeys(login);
+        waitForElementByName(PASSWORD_ELEMENT);
+        driver.findElement(SideBarLoginLocators.passwordByNameLocator).sendKeys(password);
+    }
+
+    @And("click login and check profile '([^\"]*)' opened")
+    public void checkPofileOpened(String profileName) {
+        clickLogin();
+        waitForElementByCss(SIDE_BAR_PROFILE_CSS);
+        assertEquals(driver.findElement(SideBarLocators.sidebarProfileLocator).getText(),
+                profileName);
+    }
+
+    @And("click login$")
+    public void clickLogin() {
+        driver.findElement(Buttons.buttonGreenLocator).click();
+    }
+
+    @And("check email error message '([^\"]*)'")
+    public void checkEmailErrorMessage(String errorMessage) {
+        assertEquals(driver.findElement(SideBarLoginLocators.sidebarLoginInputErrorLocator).getText(),
+                errorMessage);
+    }
+
+    @And("check login error message '([^\"]*)'")
+    public void checkLoginErrorMessage(String errorMessage) {
+        waitForElementByCss(SIDE_BAR_LOGIN_ERROR_CSS);
+        assertEquals(driver.findElement(SideBarLoginLocators.sidebarErrorLocator).getText(),
+                errorMessage);
+    }
+
+    @After("@web")
+    public void exit() {
+        closeBrowserAndExit();
+    }
+
+    private void waitForElementByName(String element) {
+        WebDriverWait wait = new WebDriverWait(driver, 20); // Wait for 10 seconds.
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(element)));
+    }
+
+    private void waitForElementByCss(String element) {
+        WebDriverWait wait = new WebDriverWait(driver, 20); // Wait for 10 seconds.
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(element)));
+    }
+
     public void openSite(String siteDomainName) throws Exception {
         openPage(siteDomainName);
         for (int second = 0; ; second++) {
@@ -30,6 +91,7 @@ public class AuthorizationWebSteps {
             try {
                 if (driver.getTitle().contains(MAIN_PAGE_TITTLE)) break;
             } catch (Exception e) {
+                logger.info(e.getMessage());
             }
             Thread.sleep(1000);
         }
@@ -42,65 +104,6 @@ public class AuthorizationWebSteps {
         Assert.assertTrue("Site title does not contain..Expected: " + siteDomainName
                         + " But Actual was: " + driver.getTitle()
                 , driver.getTitle().contains(MAIN_PAGE_TITTLE));
-    }
-
-    private void openPage(String siteDomainName) {
-        System.setProperty(WEB_DRIVER_PROPERTY_KEY, WEB_DRIVER_PROPERTY_VALUE);
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
-        driver.get(siteDomainName);
-    }
-
-    @And("enter login '([^\"]*)' and password '([^\"]*)'")
-    public void enterLoginAndPassword(String login, String password) throws InterruptedException {
-        driver.findElement(By.className("SidebarTab__text")).click();
-        waitForElementByName("email");
-        driver.findElement(By.name("email")).sendKeys("check");
-        driver.findElement(By.name("email")).clear();
-        driver.findElement(By.name("email")).sendKeys(login);
-        waitForElementByName("password");
-        driver.findElement(By.name("password")).sendKeys(password);
-    }
-
-    @And("click login and check profile '([^\"]*)' opened")
-    public void checkPofileOpened(String profileName) {
-        clickLogin();
-        waitForElementByCss(".SidebarProfile__UserName");
-        assertEquals(driver.findElement(By.cssSelector(".SidebarProfile__UserName")).getText(),
-                profileName);
-    }
-
-    @And("click login$")
-    public void clickLogin() {
-        driver.findElement(By.cssSelector(".Button_green")).click();
-    }
-
-    @And("check email error message '([^\"]*)'")
-    public void checkEmailErrorMessage(String errorMessage) {
-        assertEquals(driver.findElement(By.cssSelector(".iqInput__error")).getText(),
-                errorMessage);
-    }
-
-    @And("check login error message '([^\"]*)'")
-    public void checkLoginErrorMessage(String errorMessage) {
-        waitForElementByCss(".css-iesei9");
-        assertEquals(driver.findElement(By.cssSelector(".css-iesei9")).getText(),
-                errorMessage);
-    }
-
-    @After("@web")
-    public void exit() {
-        closeBrowserAndExit();
-    }
-
-    private void waitForElementByName(String element) {
-        WebDriverWait wait = new WebDriverWait(driver, 10); // Wait for 10 seconds.
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.name(element)));
-    }
-
-    private void waitForElementByCss(String element) {
-        WebDriverWait wait = new WebDriverWait(driver, 10); // Wait for 10 seconds.
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(element)));
     }
 
     private void closeBrowserAndExit() {

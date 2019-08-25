@@ -1,11 +1,10 @@
-package Utils;
+package urlData;
 
 /**
  * Used for storing constants and paths to common requests.
  */
 public final class Requests {
 
-    public static final String BASE_URL = "https://iqoption.com";
     public static final String BASE_WEB_URL = "https://iqoption.com/en";
     public static final String AUTH_URL = "https://auth.iqoption.com";
 

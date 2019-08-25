@@ -5,8 +5,8 @@ import Utils.RequestType;
 import Utils.TestContext;
 import cucumber.api.java.en.And;
 
-import static Utils.Requests.AUTH_URL;
-import static Utils.Requests.Authorization.AUTHORIZATION_URI;
+import static urlData.Requests.AUTH_URL;
+import static urlData.Requests.Authorization.AUTHORIZATION_URI;
 
 public class AuthorizationSteps {
 

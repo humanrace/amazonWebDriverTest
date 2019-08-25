@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 
-import static Utils.Requests.BASE_URL;
-import static Utils.Requests.Registration.REGISTRATION_URL;
+import static pages.IqOptionMainPage.BASE_URL;
+import static urlData.Requests.Registration.REGISTRATION_URL;
 
 public class RegistrationSteps {
 

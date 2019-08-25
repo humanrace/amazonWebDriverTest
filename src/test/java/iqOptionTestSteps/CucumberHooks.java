@@ -2,14 +2,12 @@ package iqOptionTestSteps;
 
 import Utils.TestContext;
 import cucumber.api.Scenario;
-import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import org.junit.Assume;
-import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static Utils.Requests.BASE_WEB_URL;
+import static urlData.Requests.BASE_WEB_URL;
 
 public class CucumberHooks {
 
